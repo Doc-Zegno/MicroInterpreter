@@ -1,7 +1,10 @@
 package scanning
 
-import java.lang.IllegalArgumentException
+import java.lang.Exception
 import java.lang.StringBuilder
+
+
+class ScannerException(message: String) : Exception(message)
 
 
 class Scanner(lines: List<String>) {
@@ -9,6 +12,28 @@ class Scanner(lines: List<String>) {
     private var currentCharacter: Char? = null
 
     private val inputIterator: Iterator<Char>
+    private val operations2types = mapOf(
+        '+' to OperationType.ADD,
+        '-' to OperationType.SUBTRACT,
+        '*' to OperationType.MULTIPLY,
+        '/' to OperationType.DIVIDE,
+        '%' to OperationType.MODULO,
+        '<' to OperationType.LESS,
+        '>' to OperationType.GREATER,
+        '=' to OperationType.EQUAL
+    )
+    private val controls2types = mapOf(
+        ',' to ControlType.COMMA,
+        ':' to ControlType.COLON,
+        '(' to ControlType.OPEN_PARENTHESIS,
+        ')' to ControlType.CLOSE_PARENTHESIS,
+        '[' to ControlType.OPEN_BRACKET,
+        ']' to ControlType.CLOSE_BRACKET,
+        '{' to ControlType.OPEN_BRACE,
+        '}' to ControlType.CLOSE_BRACE,
+        '?' to ControlType.QUESTION,
+        '\n' to ControlType.EOL
+    )
 
 
     init {
@@ -21,36 +46,53 @@ class Scanner(lines: List<String>) {
     fun getNextLexeme(): Lexeme? {
         if (currentCharacter != null) {
             val current = currentCharacter!!
+            moveNextCharacter()
 
             // Identifier
-            if (isLetter(current)) {
+            if (current.isValidLetter()) {
                 return scanIdentifier(current)
             }
 
-            // TODO: add other options
+            // Literal
+            if (current.isDigit()) {
+                return scanLiteral(current)
+            }
+
+            // Operation
+            val operationType = operations2types[current]
+            if (operationType != null) {
+                return OperationLexeme(operationType, currentLineNumber)
+            }
+
             // Control
-            return scanControl(current)
+            val controlType = controls2types[current]
+            if (controlType != null) {
+                return ControlLexeme(controlType, currentLineNumber)
+            }
+
+            // Unknown character
+            raiseError("Unknown character: '$current'")
         } else {
             return null
         }
     }
 
 
-    private fun scanControl(current: Char): Lexeme {
-        val controlType = getControlType(current)
-        moveNextCharacter()
-        return ControlLexeme(controlType, currentLineNumber)
-    }
+    private fun scanLiteral(first: Char): Lexeme {
+        var value = first - '0'
 
-
-    private fun getControlType(current: Char): ControlType {
-        return when (current) {
-            ',' -> ControlType.COMMA
-            ':' -> ControlType.COLON
-
-            // TODO: replace with ScannerException
-            else -> throw IllegalArgumentException("Unknown control character")
+        while (currentCharacter != null) {
+            val current = currentCharacter!!
+            if (current.isDigit()) {
+                value *= 10
+                value += current - '0'
+                moveNextCharacter()
+            } else {
+                break
+            }
         }
+
+        return LiteralLexeme(value, currentLineNumber)
     }
 
 
@@ -58,21 +100,17 @@ class Scanner(lines: List<String>) {
         val builder = StringBuilder()
         builder.append(first)
 
-        while (moveNextCharacter()) {
+        while (currentCharacter != null) {
             val current = currentCharacter!!
-            if (isLetter(current)) {
+            if (current.isValidLetter()) {
                 builder.append(current)
+                moveNextCharacter()
             } else {
                 break
             }
         }
 
         return IdentifierLexeme(builder.toString(), currentLineNumber)
-    }
-
-
-    private fun isLetter(char: Char): Boolean {
-        return char in 'A'..'Z' || char in 'a'..'z' || char == '_'
     }
 
 
@@ -87,5 +125,15 @@ class Scanner(lines: List<String>) {
             currentCharacter = null
             false
         }
+    }
+
+
+    private fun raiseError(message: String): Nothing {
+        throw ScannerException(message)
+    }
+
+
+    companion object {
+        private fun Char.isValidLetter(): Boolean = this in 'A'..'Z' || this in 'a'..'z' || this == '_'
     }
 }
