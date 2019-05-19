@@ -11,8 +11,8 @@ import kotlin.test.assertTrue
 internal class ScannerTest {
     @Test
     fun `getNextLexeme on empty input`() {
-        val lines = listOf<String>()
-        val scanner = Scanner(lines)
+        val line = ""
+        val scanner = Scanner(line)
         assertNull(scanner.getNextLexeme())
     }
 
@@ -20,8 +20,7 @@ internal class ScannerTest {
     @Test
     fun `getNextLexeme on identifier`() {
         val expected = "__lessThanOrEqual__"
-        val lines = listOf(expected)
-        val scanner = Scanner(lines)
+        val scanner = Scanner(expected)
 
         // First lexeme should be IdentifierLexeme
         val lexeme = scanner.getNextLexeme()
@@ -36,8 +35,8 @@ internal class ScannerTest {
 
     @Test
     fun `getNextLexeme on two identifiers`() {
-        val lines = listOf("Sample,Text")
-        val scanner = Scanner(lines)
+        val line = "Sample,Text"
+        val scanner = Scanner(line)
 
         // First lexeme should be IdentifierLexeme
         val lexeme1 = scanner.getNextLexeme()
@@ -64,8 +63,8 @@ internal class ScannerTest {
 
     @Test
     fun `getNextLexeme on two literals`() {
-        val lines = listOf("137+42")
-        val scanner = Scanner(lines)
+        val line = "137+42"
+        val scanner = Scanner(line)
 
         // First lexeme should be IdentifierLexeme
         val lexeme1 = scanner.getNextLexeme()
@@ -92,8 +91,8 @@ internal class ScannerTest {
 
     @Test
     fun `getNextLexeme invalid character`() {
-        val lines = listOf("&")
-        val scanner = Scanner(lines)
+        val line = "&"
+        val scanner = Scanner(line)
 
         assertThrows<ScannerException> { scanner.getNextLexeme() }
     }

@@ -4,11 +4,10 @@ import java.lang.Exception
 import java.lang.StringBuilder
 
 
-class ScannerException(message: String) : Exception(message)
+class ScannerException() : Exception("LEXICAL ERROR")
 
 
-class Scanner(lines: List<String>) {
-    private var currentLineNumber: Int = 1
+class Scanner(line: String) {
     private var currentCharacter: Char? = null
 
     private val inputIterator: Iterator<Char>
@@ -37,8 +36,7 @@ class Scanner(lines: List<String>) {
 
 
     init {
-        val sequence = lines.joinToSequence()
-        inputIterator = sequence.iterator()
+        inputIterator = line.iterator()
         moveNextCharacter()
     }
 
@@ -61,17 +59,17 @@ class Scanner(lines: List<String>) {
             // Operation
             val operationType = operations2types[current]
             if (operationType != null) {
-                return OperationLexeme(operationType, currentLineNumber)
+                return OperationLexeme(operationType)
             }
 
             // Control
             val controlType = controls2types[current]
             if (controlType != null) {
-                return ControlLexeme(controlType, currentLineNumber)
+                return ControlLexeme(controlType)
             }
 
             // Unknown character
-            raiseError("Unknown character: '$current'")
+            throw ScannerException()
         } else {
             return null
         }
@@ -92,7 +90,7 @@ class Scanner(lines: List<String>) {
             }
         }
 
-        return LiteralLexeme(value, currentLineNumber)
+        return LiteralLexeme(value)
     }
 
 
@@ -110,26 +108,18 @@ class Scanner(lines: List<String>) {
             }
         }
 
-        return IdentifierLexeme(builder.toString(), currentLineNumber)
+        return IdentifierLexeme(builder.toString())
     }
 
 
     private fun moveNextCharacter(): Boolean {
         return if (inputIterator.hasNext()) {
             currentCharacter = inputIterator.next()
-            if (currentCharacter == '\n') {
-                currentLineNumber++
-            }
             true
         } else {
             currentCharacter = null
             false
         }
-    }
-
-
-    private fun raiseError(message: String): Nothing {
-        throw ScannerException(message)
     }
 
 

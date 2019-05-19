@@ -1,15 +1,13 @@
 package scanning
 
 
-sealed class Lexeme {
-    abstract val line: Int
-}
+sealed class Lexeme
 
 
-data class LiteralLexeme(val value: Int, override val line: Int) : Lexeme()
+data class LiteralLexeme(val value: Int) : Lexeme()
 
 
-data class IdentifierLexeme(val text: String, override val line: Int) : Lexeme()
+data class IdentifierLexeme(val text: String) : Lexeme()
 
 
 enum class OperationType {
@@ -24,7 +22,7 @@ enum class OperationType {
 }
 
 
-data class OperationLexeme(val operationType: OperationType, override val line: Int) : Lexeme()
+data class OperationLexeme(val operationType: OperationType) : Lexeme()
 
 
 enum class ControlType {
@@ -41,4 +39,4 @@ enum class ControlType {
 }
 
 
-data class ControlLexeme(val controlType: ControlType, override val line: Int) : Lexeme()
+data class ControlLexeme(val controlType: ControlType) : Lexeme()
