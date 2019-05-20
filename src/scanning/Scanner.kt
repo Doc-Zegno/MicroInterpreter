@@ -4,7 +4,7 @@ import java.lang.Exception
 import java.lang.StringBuilder
 
 
-class ScannerException() : Exception("LEXICAL ERROR")
+class ScannerException() : Exception("SYNTAX ERROR")
 
 
 class Scanner(line: String) {
@@ -30,8 +30,7 @@ class Scanner(line: String) {
         ']' to ControlType.CLOSE_BRACKET,
         '{' to ControlType.OPEN_BRACE,
         '}' to ControlType.CLOSE_BRACE,
-        '?' to ControlType.QUESTION,
-        '\n' to ControlType.EOL
+        '?' to ControlType.QUESTION
     )
 
 

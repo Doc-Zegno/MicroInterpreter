@@ -41,7 +41,7 @@ class Interpreter(private val program: Program) {
         val definition = program.definitions[number]
         val result = evaluate(definition.body)
 
-        // Clear stack frame
+        // Remove last stack frame
         scopeStack.removeLast()
         return result
     }

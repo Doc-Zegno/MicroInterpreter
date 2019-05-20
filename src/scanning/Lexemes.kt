@@ -35,7 +35,6 @@ enum class ControlType {
     QUESTION,
     COLON,
     COMMA,
-    EOL,
 }
 
 

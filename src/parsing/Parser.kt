@@ -48,7 +48,7 @@ class Parser(lines: List<String>) {
             throw SyntaxException()
         }
 
-        // 1st pass: collect functions and their signatures
+        // 1st pass: collect functions' signatures
         reset()
         moveNextLexeme()
         functionSignatures.clear()
