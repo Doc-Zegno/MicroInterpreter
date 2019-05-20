@@ -50,3 +50,14 @@ The same is true for parameters of functions: symbolic parameter
 names are replaced by the compiler with their stack offset.
 That makes it possible to calculate parameter's value at runtime
 very fast
+
+
+### Further work
+Some optimizations can be performed on analysis of binary expressions.
+If both arguments are `ConstantExpression`'s, binary one can be
+evaluated at compile-time (the code will be similar to
+`evaluateBinaryExpression()` from `Interpreter`).
+
+Function calls can also be reduced if function's body is a constant
+expression. But, as I can see, it requires the third pass of
+compiler
